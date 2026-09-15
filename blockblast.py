@@ -209,7 +209,21 @@ class Piece:
             index = index + 1
 
     def contains_point(self, px, py):
+        i = 0
+        while i < len(self.blocks):
+            block = self.blocks[i]
+            block_x = self.x + block[0] * self.mini_cell
+            block_y = self.y + block[1] * self.mini_cell
+            if block_x <= px and px <= block_x + self.mini_cell:
+                if block_y <= py and py <= block_y + self.mini_cell:
+                    return True
+            i = i + 1
+        return False
+
     def reset_pos(self):
+        self.x = self.anchor_x
+        self.y = self.anchor_y
+        self.is_dragging = False
 
 board = None
 hand = [0, 0, 0]
