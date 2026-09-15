@@ -260,7 +260,9 @@ def setup():
     board = Board(GRID_SIZE, CELL_SIZE, BOARD_X, BOARD_Y)
     score = 0
     game_over = False
-    board.grid[3][3] = 3
+    
+    #board.grid[3][3] = 3
+    #board.grid[3][4] = 2
     #draw_squre(250,300,CELL_SIZE)
     board.draw()
     spawn_hand()
@@ -272,20 +274,72 @@ def draw():
     board.draw()
     i = 0
     while i < len(hand):
-        hand[i].draw()
+        if hand[i] != 0:
+            if not hand[i].is_dragging:
+                hand[i].draw()
         i = i + 1
 
     # Draw selected piece on top
     if selected_piece != None:
+        selected_piece.draw()
     # When Game over
     if game_over:
+
+def is_hand_empty():
+    index = 0
+    while index < len(hand):
+        if hand[index] != 0:
+            return False
+        index = index + 1
+    return True
 
 def mousePressed():
     global selected_piece, selected_index, game_over
 
+    if game_over:
+        setup()
+        return
+
+    index = 0
+    while index < len(hand):
+        piece = hand[index]
+        if piece != 0:
+            if piece.contains_point(mouseX, mouseY):
+                selected_piece = piece
+                selected_index = index
+                piece.is_dragging = True
+                piece.drag_offset_x = mouseX - piece.x
+                piece.drag_offset_y = mouseY - piece.y
+                break
+        index = index + 1
+
 def mouseDragged():
+    if selected_piece != None:
+        selected_piece.x = mouseX - selected_piece.drag_offset_x
+        selected_piece.y = mouseY - selected_piece.drag_offset_y
 
 def mouseReleased():
     global selected_piece, selected_index, score, game_over
+
     if selected_piece == None:
+        return
+
+    cell_size = board.cell_size
+    target_c = round((selected_piece.x - board.ox) / cell_size)
+    target_r = round((selected_piece.y - board.oy) / cell_size)
+
     if board.can_place(selected_piece, target_r, target_c):
+        board.place(selected_piece, target_r, target_c)
+        
+        score += (len(selected_piece.blocks) * 10) + board.clear_lines()
+        hand[selected_index] = 0
+
+        if is_hand_empty():
+            spawn_hand()
+            
+    else:
+        selected_piece.reset_pos()
+
+    selected_piece = None
+    selected_index = -1
+run()
