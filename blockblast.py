@@ -36,6 +36,26 @@ SHAPE_TEMPLATES = [
     ([(0, 1), (1, 1), (1, 0)], 2),
 ]
 
+def draw_square(x,y,size, fill_color, stroke_color):
+    stroke(fill_color[0], fill_color[1], fill_color[2])
+    strokeWeight(1)
+    
+    offset_y = 0
+    while offset_y < size:
+        line(x, y + offset_y, x + size, y + offset_y)
+        offset_y += 1
+
+    stroke(stroke_color[0], stroke_color[1], stroke_color[2])
+    strokeWeight(2)
+    # top
+    line(x, y, x + size, y)
+    # bottom
+    line(x + size, y + size, x, y + size)
+    # right
+    line(x + size, y, x + size, y + size)
+    # left
+    line(x, y + size, x, y)
+
 class Board:
     def __init__(self, size, cell_size, origin_x, origin_y):
         self.size = size
@@ -46,15 +66,37 @@ class Board:
         self.grid = []
         index_row = 0
 
-        while row < self.size:
+        while index_row < self.size:
             index_column = 0
             row = []
 
-            while column < self.size:
+            while index_column < self.size:
                 row.append(0)
                 index_column += 1
 
-            grid.append(row)
+            self.grid.append(row)
+            index_row += 1
+    
+    def draw(self):
+        index_row = 0
+        while index_row < self.size:
+            index_column = 0
+
+            while index_column < self.size:
+                value = self.grid[index_row][index_column]
+                
+                if value == 0:
+                    fill_column = (255,255,255)
+                    border_column = (0, 0, 0)
+                else:
+                    fill_column = PALETTE[value - 1]
+                    border_column = PALETTE[value - 1]
+                
+                cell_x = self.ox + index_column * self.cell_size
+                cell_y = self.oy + index_row * self.cell_size
+                draw_square(cell_x, cell_y, self.cell_size - 4, fill_column, border_column)
+
+                index_column += 1
             index_row += 1
     
     def draw(self):
@@ -116,6 +158,9 @@ def setup():
     score = 0
     game_over = False
     spawn_hand()
+    board.grid[3][3] = 3
+    #draw_squre(250,300,CELL_SIZE)
+    board.draw()
 
 def draw():
     # Draw selected piece on top
