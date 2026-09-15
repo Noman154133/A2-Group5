@@ -99,6 +99,20 @@ class Board:
 
                 index_column += 1
             index_row += 1
+
+    def can_place(self, piece, target_r, target_c):
+        index = 0
+        while index < len(piece.blocks):
+            block = piece.blocks[index]
+            row = target_r + block[1]
+            column = target_c + block[0]
+            
+            if row < 0 or row >= self.size or column < 0 or column >= self.size:
+                return False
+            if self.grid[row][column] != 0:
+                return False
+            index = index + 1
+        return True
     
     def place(self, piece, target_r, target_c):
         i = 0
@@ -108,6 +122,61 @@ class Board:
             c = target_c + block[0]
             self.grid[r][c] = piece.color_idx + 1
             i = i + 1
+
+    def clear_lines(self):
+        rows_to_clear = []
+        cols_to_clear = []
+
+        # Check full rows
+        row = 0
+        while row < self.size:
+            is_full = True
+            column = 0
+            while c < self.size:
+                if self.grid[row][column] == 0:
+                    is_full = False
+                    break
+                column = column + 1
+            if is_full:
+                rows_to_clear.append(row)
+            row = row + 1
+
+        # Check full columns
+        column = 0
+        while column < self.size:
+            is_full = True
+            row = 0
+            while row < self.size:
+                if self.grid[row][column] == 0:
+                    is_full = False
+                    break
+                row = row + 1
+            if is_full:
+                cols_to_clear.append(column)
+            column = column + 1
+
+        # Clear detected rows
+        index = 0
+        while index < len(rows_to_clear):
+            target_row = rows_to_clear[index]
+            column = 0
+            while column < self.size:
+                self.grid[target_row][column] = 0
+                column = column + 1
+            index = index + 1
+
+        # Clear detected columns
+        index = 0
+        while index < len(cols_to_clear):
+            target_column = cols_to_clear[index]
+            row = 0
+            while row < self.size:
+                self.grid[row][target_column] = 0
+                row = row + 1
+            index = index + 1
+
+        cleared_count = len(rows_to_clear) + len(cols_to_clear)
+        return cleared_count * 100
 
 class Piece:
     def __init__(self, blocks, color_idx, anchor_x, anchor_y):
@@ -184,7 +253,7 @@ def draw():
     while i < len(hand):
         hand[i].draw()
         i = i + 1
-        
+
     # Draw selected piece on top
     if selected_piece != None:
     # When Game over
