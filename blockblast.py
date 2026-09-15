@@ -97,12 +97,25 @@ selected_index = -1
 def spawn_hand():
     global hand
 
+    index = 0
+    while index < len(hand):
+        random_select = random.choice(SHAPE_TEMPLATES)
+        hand[index] = random_select
+
+        index += 1
+
 def is_hand_empty():
 def check_game_over():
     global game_over
 
 def setup():
     global board, score, game_over
+    size(500, 600)
+
+    board = Board(GRID_SIZE, CELL_SIZE, BOARD_X, BOARD_Y)
+    score = 0
+    game_over = False
+    spawn_hand()
 
 def draw():
     # Draw selected piece on top
