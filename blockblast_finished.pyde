@@ -1,4 +1,3 @@
-from processing import *
 import random
 
 GRID_SIZE = 8
