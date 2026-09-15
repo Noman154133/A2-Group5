@@ -243,6 +243,13 @@ def spawn_hand():
         index += 1
 
 def is_hand_empty():
+    index = 0
+    while index < len(hand):
+        if hand[index] != 0:
+            return False
+        index = index + 1
+    return True
+
 def check_game_over():
     global game_over
 
