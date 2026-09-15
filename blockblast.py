@@ -15,15 +15,21 @@ PALETTE = [
 ]
 
 SHAPE_TEMPLATES = [
+    # 1x1
     ([(0, 0)], 0),
+    # 2x2 Square
     ([(0, 0), (1, 0), (0, 1), (1, 1)], 1),
+    # 3x3 Square
     ([(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)], 2),
+    # Horizontal lines
     ([(0, 0), (1, 0)], 3),
     ([(0, 0), (1, 0), (2, 0)], 4),
     ([(0, 0), (1, 0), (2, 0), (3, 0)], 0),
+    # Vertical lines
     ([(0, 0), (0, 1)], 1),
     ([(0, 0), (0, 1), (0, 2)], 2),
     ([(0, 0), (0, 1), (0, 2), (0, 3)], 3),
+    # L-shapes
     ([(0, 0), (0, 1), (1, 1)], 4),
     ([(0, 0), (1, 0), (0, 1)], 0),
     ([(0, 0), (1, 0), (1, 1)], 1),
@@ -38,6 +44,18 @@ class Board:
         self.oy = origin_y
         
         self.grid = []
+        index_row = 0
+
+        while row < self.size:
+            index_column = 0
+            row = []
+
+            while column < self.size:
+                row.append(0)
+                index_column += 1
+
+            grid.append(row)
+            index_row += 1
     
     def draw(self):
     def can_place(self, piece, target_r, target_c):
