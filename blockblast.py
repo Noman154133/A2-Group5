@@ -36,7 +36,7 @@ SHAPE_TEMPLATES = [
     ([(0, 1), (1, 1), (1, 0)], 2),
 ]
 
-def draw_square(x,y,size, fill_color, stroke_color):
+def draw_square(x,y,size, fill_color, stroke_color, corner_weight):
     stroke(fill_color[0], fill_color[1], fill_color[2])
     strokeWeight(1)
     
@@ -46,7 +46,7 @@ def draw_square(x,y,size, fill_color, stroke_color):
         offset_y += 1
 
     stroke(stroke_color[0], stroke_color[1], stroke_color[2])
-    strokeWeight(2)
+    strokeWeight(corner_weight)
     # top
     line(x, y, x + size, y)
     # bottom
@@ -55,6 +55,7 @@ def draw_square(x,y,size, fill_color, stroke_color):
     line(x + size, y, x + size, y + size)
     # left
     line(x, y + size, x, y)
+
 
 class Board:
     def __init__(self, size, cell_size, origin_x, origin_y):
@@ -94,23 +95,19 @@ class Board:
                 
                 cell_x = self.ox + index_column * self.cell_size
                 cell_y = self.oy + index_row * self.cell_size
-                draw_square(cell_x, cell_y, self.cell_size - 4, fill_column, border_column)
+                draw_square(cell_x, cell_y, self.cell_size - 4, fill_column, border_column, 2)
 
                 index_column += 1
             index_row += 1
     
-    def draw(self):
-    def can_place(self, piece, target_r, target_c):
     def place(self, piece, target_r, target_c):
-    
-    def clear_lines(self):
-        rows_to_clear = []
-        cols_to_clear = []
-
-        # Check full rows
-        # Check full columns
-        # Clear detected rows
-        # Clear detected columns
+        i = 0
+        while i < len(piece.blocks):
+            block = piece.blocks[i]
+            r = target_r + block[1]
+            c = target_c + block[0]
+            self.grid[r][c] = piece.color_idx + 1
+            i = i + 1
 
 class Piece:
     def __init__(self, blocks, color_idx, anchor_x, anchor_y):
@@ -126,6 +123,22 @@ class Piece:
         self.mini_cell = 24
     
     def draw(self):
+        color = PALETTE[self.color_idx]
+        border_color = (0, 0, 0)
+        
+        scale_size = self.mini_cell
+        if self.is_dragging:
+            scale_size = CELL_SIZE
+
+        index = 0
+        while index < len(self.blocks):
+            block = self.blocks[i]
+            blockx = self.x + block[0] * scale_size
+            blocky = self.y + block[1] * scale_size
+            
+            draw_square(blockx, blocky, scale_size - 2, color, border_color, 1)
+            index = index + 1
+
     def contains_point(self, px, py):
     def reset_pos(self):
 
@@ -157,12 +170,21 @@ def setup():
     board = Board(GRID_SIZE, CELL_SIZE, BOARD_X, BOARD_Y)
     score = 0
     game_over = False
-    spawn_hand()
     board.grid[3][3] = 3
     #draw_squre(250,300,CELL_SIZE)
     board.draw()
+    spawn_hand()
 
 def draw():
+    background(176, 217, 255)
+    fill(255)
+
+    board.draw()
+    i = 0
+    while i < len(hand):
+        hand[i].draw()
+        i = i + 1
+        
     # Draw selected piece on top
     if selected_piece != None:
     # When Game over
