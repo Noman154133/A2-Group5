@@ -320,6 +320,9 @@ def draw():
         text("YOU LOSE", width / 2 - 100, height / 2 - 20)
         textSize(16)
         text("Click to restart", width / 2 - 70, height / 2 + 20)
+    
+    textSize(33)
+    text("Score: " + str(score), width/2 - 85, 38)
 
 def is_hand_empty():
     index = 0

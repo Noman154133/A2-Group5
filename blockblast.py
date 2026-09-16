@@ -322,6 +322,9 @@ def draw():
         textSize(16)
         text("Click to restart", width / 2 - 70, height / 2 + 20)
 
+    textSize(33)
+    text("Score: " + str(score), width/2 - 85, 38)
+
 def is_hand_empty():
     index = 0
     while index < len(hand):
