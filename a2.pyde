@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-# Draft for function designs
-# function design
-# --- CONFIGURATION ---
-=======
 from processing import *
 import random
 
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
 GRID_SIZE = 8
 CELL_SIZE = 48
 BOARD_X = 58
@@ -21,17 +15,6 @@ PALETTE = [
 ]
 
 SHAPE_TEMPLATES = [
-<<<<<<< HEAD
-    ([(0, 0)], 0),
-    ([(0, 0), (1, 0), (0, 1), (1, 1)], 1),
-    ([(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)], 2),
-    ([(0, 0), (1, 0)], 3),
-    ([(0, 0), (1, 0), (2, 0)], 4),
-    ([(0, 0), (1, 0), (2, 0), (3, 0)], 0),
-    ([(0, 0), (0, 1)], 1),
-    ([(0, 0), (0, 1), (0, 2)], 2),
-    ([(0, 0), (0, 1), (0, 2), (0, 3)], 3),
-=======
     # 1x1
     ([(0, 0)], 0),
     # 2x2 Square
@@ -47,7 +30,6 @@ SHAPE_TEMPLATES = [
     ([(0, 0), (0, 1), (0, 2)], 2),
     ([(0, 0), (0, 1), (0, 2), (0, 3)], 3),
     # L-shapes
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
     ([(0, 0), (0, 1), (1, 1)], 4),
     ([(0, 0), (1, 0), (0, 1)], 0),
     ([(0, 0), (1, 0), (1, 1)], 1),
@@ -55,9 +37,6 @@ SHAPE_TEMPLATES = [
 ]
 
 def draw_square(x,y,size, fill_color, stroke_color, corner_weight):
-<<<<<<< HEAD
-    
-=======
     stroke(fill_color[0], fill_color[1], fill_color[2])
     strokeWeight(1)
     
@@ -78,7 +57,6 @@ def draw_square(x,y,size, fill_color, stroke_color, corner_weight):
     line(x, y + size, x, y)
 
 
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
 class Board:
     def __init__(self, size, cell_size, origin_x, origin_y):
         self.size = size
@@ -87,13 +65,6 @@ class Board:
         self.oy = origin_y
         
         self.grid = []
-<<<<<<< HEAD
-    
-    def draw(self):
-    def can_place(self, piece, target_r, target_c):
-    def place(self, piece, target_r, target_c):
-    
-=======
         index_row = 0
 
         while index_row < self.size:
@@ -152,17 +123,11 @@ class Board:
             self.grid[r][c] = piece.color_idx + 1
             i = i + 1
 
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
     def clear_lines(self):
         rows_to_clear = []
         cols_to_clear = []
 
         # Check full rows
-<<<<<<< HEAD
-        # Check full columns
-        # Clear detected rows
-        # Clear detected columns
-=======
         row = 0
         while row < self.size:
             is_full = True
@@ -212,7 +177,6 @@ class Board:
 
         cleared_count = len(rows_to_clear) + len(cols_to_clear)
         return cleared_count * 100
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
 
 class Piece:
     def __init__(self, blocks, color_idx, anchor_x, anchor_y):
@@ -228,12 +192,6 @@ class Piece:
         self.mini_cell = 24
     
     def draw(self):
-<<<<<<< HEAD
-    def contains_point(self, px, py):
-    def reset_pos(self):
-
-# --- GLOBAL GAME STATE ---
-=======
         color = PALETTE[self.color_idx]
         border_color = (0, 0, 0)
         
@@ -267,7 +225,6 @@ class Piece:
         self.y = self.anchor_y
         self.is_dragging = False
 
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
 board = None
 hand = [0, 0, 0]
 score = 0
@@ -276,22 +233,6 @@ selected_piece = None
 selected_index = -1
 
 def spawn_hand():
-<<<<<<< HEAD
-    global hand
-
-def is_hand_empty():
-def check_game_over():
-    global game_over
-
-def setup():
-    global board, score, game_over
-
-def draw():
-    # Draw selected piece on top
-    if selected_piece != None:
-    # When Game over
-    if game_over:
-=======
     index = 0
     slot_width = width / 3
     while index < len(hand):
@@ -391,20 +332,10 @@ def is_hand_empty():
             return False
         index = index + 1
     return True
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
 
 def mousePressed():
     global selected_piece, selected_index, game_over
 
-<<<<<<< HEAD
-def mouseDragged():
-
-def mouseReleased():
-    global selected_piece, selected_index, score, game_over
-    if selected_piece == None:
-    if board.can_place(selected_piece, target_r, target_c):
-    
-=======
     if game_over:
         setup()
         return
@@ -455,4 +386,3 @@ def mouseReleased():
     selected_piece = None
     selected_index = -1
 run()
->>>>>>> 45bbe7f1ab1b8f95341b74b509f2cea9ab643b13
