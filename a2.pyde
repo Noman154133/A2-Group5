@@ -1,6 +1,9 @@
-from processing import *
+# Draft for function designs
+# finished and working game
+# function design
 import random
 
+# --- CONFIGURATION ---
 GRID_SIZE = 8
 CELL_SIZE = 48
 BOARD_X = 58
@@ -224,7 +227,8 @@ class Piece:
         self.x = self.anchor_x
         self.y = self.anchor_y
         self.is_dragging = False
-
+        
+# --- GLOBAL GAME STATE ---
 board = None
 hand = [0, 0, 0]
 score = 0
