@@ -39,25 +39,11 @@ SHAPE_TEMPLATES = [
     ([(0, 1), (1, 1), (1, 0)], 2),
 ]
 
-def draw_square(x,y,size, fill_color, stroke_color, corner_weight):
-    stroke(fill_color[0], fill_color[1], fill_color[2])
-    strokeWeight(1)
-    
-    offset_y = 0
-    while offset_y < size:
-        line(x, y + offset_y, x + size, y + offset_y)
-        offset_y += 1
-
+def draw_square(x, y, size, fill_color, stroke_color, corner_weight):
+    fill(fill_color[0], fill_color[1], fill_color[2])
     stroke(stroke_color[0], stroke_color[1], stroke_color[2])
     strokeWeight(corner_weight)
-    # top
-    line(x, y, x + size, y)
-    # bottom
-    line(x + size, y + size, x, y + size)
-    # right
-    line(x + size, y, x + size, y + size)
-    # left
-    line(x, y + size, x, y)
+    rect(x, y, size, size)
 
 
 class Board:
@@ -90,7 +76,7 @@ class Board:
                 value = self.grid[index_row][index_column]
                 
                 if value == 0:
-                    fill_column = (255,255,255)
+                    fill_column = (255, 255, 255)
                     border_column = (0, 0, 0)
                 else:
                     fill_column = PALETTE[value - 1]
@@ -181,6 +167,7 @@ class Board:
         cleared_count = len(rows_to_clear) + len(cols_to_clear)
         return cleared_count * 100
 
+
 class Piece:
     def __init__(self, blocks, color_idx, anchor_x, anchor_y):
         self.blocks = blocks
@@ -228,6 +215,7 @@ class Piece:
         self.y = self.anchor_y
         self.is_dragging = False
         
+
 # --- GLOBAL GAME STATE ---
 board = None
 hand = [0, 0, 0]
@@ -243,11 +231,10 @@ def spawn_hand():
         random_select = random.choice(SHAPE_TEMPLATES)
         template = random_select[0]
         color = random_select[1]
-        # hand[index] = random_select
     
         piece_x = index * slot_width + (slot_width / 2) - 30
         piece_y = 490
-        hand[index] = (Piece(template, color, piece_x, piece_y))
+        hand[index] = Piece(template, color, piece_x, piece_y)
 
         index += 1
 
@@ -298,9 +285,6 @@ def setup():
     score = 0
     game_over = False
     
-    #board.grid[3][3] = 3
-    #board.grid[3][4] = 2
-    #draw_squre(250,300,CELL_SIZE)
     board.draw()
     spawn_hand()
 
@@ -309,6 +293,25 @@ def draw():
     fill(255)
 
     board.draw()
+
+    if selected_piece != None:
+        target_c = int(round((selected_piece.x - board.ox) / float(board.cell_size)))
+        target_r = int(round((selected_piece.y - board.oy) / float(board.cell_size)))
+
+        if board.can_place(selected_piece, target_r, target_c):
+            piece_color = PALETTE[selected_piece.color_idx]
+            noFill()
+            stroke(piece_color[0], piece_color[1], piece_color[2])
+            strokeWeight(2)
+
+            block_index = 0
+            while block_index < len(selected_piece.blocks):
+                block = selected_piece.blocks[block_index]
+                ghost_x = board.ox + (target_c + block[0]) * board.cell_size
+                ghost_y = board.oy + (target_r + block[1]) * board.cell_size
+                rect(ghost_x, ghost_y, board.cell_size - 4, board.cell_size - 4)
+                block_index += 1
+
     i = 0
     while i < len(hand):
         if hand[i] != 0:
@@ -327,15 +330,7 @@ def draw():
         text("Click to restart", width / 2 - 70, height / 2 + 20)
 
     textSize(33)
-    text("Score: " + str(score), width/2 - 85, 38)
-
-def is_hand_empty():
-    index = 0
-    while index < len(hand):
-        if hand[index] != 0:
-            return False
-        index = index + 1
-    return True
+    text("Score: " + str(score), width / 2 - 85, 38)
 
 def mousePressed():
     global selected_piece, selected_index, game_over
@@ -369,8 +364,8 @@ def mouseReleased():
         return
 
     cell_size = board.cell_size
-    target_c = round((selected_piece.x - board.ox) / cell_size)
-    target_r = round((selected_piece.y - board.oy) / cell_size)
+    target_c = int(round((selected_piece.x - board.ox) / float(cell_size)))
+    target_r = int(round((selected_piece.y - board.oy) / float(cell_size)))
 
     if board.can_place(selected_piece, target_r, target_c):
         board.place(selected_piece, target_r, target_c)
@@ -389,4 +384,3 @@ def mouseReleased():
 
     selected_piece = None
     selected_index = -1
-run()
