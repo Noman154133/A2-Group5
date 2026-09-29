@@ -220,6 +220,10 @@ class Piece:
 board = None
 hand = [0, 0, 0]
 score = 0
+current_streak = 0
+streak_text = ""
+streak_timer = 0
+streak_y = 50
 game_over = False
 selected_piece = None
 selected_index = -1
@@ -278,22 +282,25 @@ def check_game_over():
     return True
 
 def setup():
-    global board, score, game_over
+    global board, score, current_streak, streak_timer, game_over
     size(500, 600)
 
     board = Board(GRID_SIZE, CELL_SIZE, BOARD_X, BOARD_Y)
     score = 0
+    current_streak = 0
+    streak_timer = 0
     game_over = False
     
     board.draw()
     spawn_hand()
 
 def draw():
+    global streak_timer, streak_y
     background(176, 217, 255)
-    fill(255)
 
     board.draw()
 
+    # Placement Preview
     if selected_piece != None:
         target_c = int(round((selected_piece.x - board.ox) / float(board.cell_size)))
         target_r = int(round((selected_piece.y - board.oy) / float(board.cell_size)))
@@ -322,13 +329,27 @@ def draw():
     # Draw selected piece on top
     if selected_piece != None:
         selected_piece.draw()
+
+    # Steak notification
+    if streak_timer > 0:
+        fill(255, 120, 40)
+        textSize(15)
+        text(streak_text, 50, streak_y)
+        streak_timer -= 1
+
+    if current_streak > 1:
+        fill(255, 90, 40)
+        textSize(16)
+        text("x" + str(current_streak) + " Streak", width - 110, 36)
+
+    fill(255)
     # When Game over
     if game_over:
+        fill(255)
         textSize(36)
         text("YOU LOSE", width / 2 - 100, height / 2 - 20)
         textSize(16)
         text("Click to restart", width / 2 - 70, height / 2 + 20)
-
     textSize(33)
     text("Score: " + str(score), width / 2 - 85, 38)
 
@@ -358,7 +379,7 @@ def mouseDragged():
         selected_piece.y = mouseY - selected_piece.drag_offset_y
 
 def mouseReleased():
-    global selected_piece, selected_index, score, game_over
+    global selected_piece, selected_index, score, current_streak, streak_text, streak_timer, game_over
 
     if selected_piece == None:
         return
@@ -370,7 +391,25 @@ def mouseReleased():
     if board.can_place(selected_piece, target_r, target_c):
         board.place(selected_piece, target_r, target_c)
         
-        score += (len(selected_piece.blocks) * 10) + board.clear_lines()
+        placed_blocks_score = len(selected_piece.blocks) * 10
+        cleared_lines_score = board.clear_lines()
+
+        if cleared_lines_score > 0:
+            current_streak += 1
+            streak_reward = (current_streak - 1) * 75
+            total_earned = placed_blocks_score + cleared_lines_score + streak_reward
+            score += total_earned
+
+            if current_streak > 1:
+                streak_text = "COMBO x" + str(current_streak) + " (+" + str(cleared_lines_score + streak_reward) + ")"
+            else:
+                streak_text = "CLEAR! +" + str(cleared_lines_score)
+            
+            streak_timer = 45
+        else:
+            current_streak = 0
+            score += placed_blocks_score
+
         hand[selected_index] = 0
 
         if is_hand_empty():
