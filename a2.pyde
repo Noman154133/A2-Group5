@@ -423,3 +423,116 @@ def mouseReleased():
 
     selected_piece = None
     selected_index = -1
+
+def save_game():
+    global board, score, current_streak, hand, streak_text, streak_timer
+
+    row_list = []
+    r = 0
+    while r < board.size:
+        col_list = []
+        c = 0
+        while c < board.size:
+            col_list.append(str(board.grid[r][c]))
+            c += 1
+        row_list.append("[" + ",".join(col_list) + "]")
+        r += 1
+    line1 = "/".join(row_list)
+
+    line2 = str(score) + "," + str(current_streak)
+
+    hand_list = []
+    i = 0
+    while i < len(hand):
+        piece = hand[i]
+        if piece == 0:
+            hand_list.append("EMPTY")
+        else:
+            shape_idx = 0
+            s = 0
+            while s < len(SHAPE_TEMPLATES):
+                if SHAPE_TEMPLATES[s][0] == piece.blocks:
+                    shape_idx = s
+                    break
+                s += 1
+            hand_list.append(str(shape_idx) + ":" + str(piece.color_idx))
+        i += 1
+    line3 = ";".join(hand_list)
+
+    file = open("savegame.txt", "w")
+    file.write(line1 + "\n")
+    file.write(line2 + "\n")
+    file.write(line3 + "\n")
+    file.close()
+
+    streak_text = "GAME SAVED"
+    streak_timer = 45
+    print("Game saved successfully to savegame.txt")
+
+def load_game():
+    global board, score, current_streak, hand, game_over, selected_piece, selected_index, streak_text, streak_timer
+
+    try:
+        file = open("savegame.txt", "r")
+        lines = file.readlines()
+        file.close()
+    except:
+        print("Cannot find savegame.txt")
+        return
+
+    if len(lines) < 3:
+        return
+
+    line1 = lines[0].strip()
+    line2 = lines[1].strip()
+    line3 = lines[2].strip()
+
+    rows = line1.split("/")
+    r = 0
+    while r < len(rows) and r < board.size:
+        row_str = rows[r].replace("[", "").replace("]", "")
+        cols = row_str.split(",")
+        c = 0
+        while c < len(cols) and c < board.size:
+            board.grid[r][c] = int(cols[c].strip())
+            c += 1
+        r += 1
+
+    score_parts = line2.split(",")
+    score = int(score_parts[0].strip())
+    current_streak = int(score_parts[1].strip())
+
+    hand_items = line3.split(";")
+    slot_width = width / 3
+    i = 0
+    while i < len(hand_items) and i < len(hand):
+        item = hand_items[i].strip()
+        if item == "EMPTY":
+            hand[i] = 0
+        else:
+            parts = item.split(":")
+            shape_idx = int(parts[0].strip())
+            color_idx = int(parts[1].strip())
+            template = SHAPE_TEMPLATES[shape_idx][0]
+
+            piece_x = i * slot_width + (slot_width / 2) - 30
+            piece_y = 490
+            hand[i] = Piece(template, color_idx, piece_x, piece_y)
+        i += 1
+
+    if is_hand_empty():
+        spawn_hand()
+
+    selected_piece = None
+    selected_index = -1
+    game_over = check_game_over()
+
+    streak_text = "GAME LOADED"
+    streak_timer = 45
+    print("Game loaded successfully from savegame.txt")
+
+def keyPressed():
+    if key == 's' or key == 'S':
+        save_game()
+    elif key == 'l' or key == 'L':
+        load_game()
