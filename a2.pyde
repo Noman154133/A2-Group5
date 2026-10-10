@@ -294,13 +294,7 @@ def setup():
     board.draw()
     spawn_hand()
 
-def draw():
-    global streak_timer, streak_y
-    background(176, 217, 255)
-
-    board.draw()
-
-    # Placement Preview
+def draw_preview():
     if selected_piece != None:
         target_c = int(round((selected_piece.x - board.ox) / float(board.cell_size)))
         target_r = int(round((selected_piece.y - board.oy) / float(board.cell_size)))
@@ -319,6 +313,7 @@ def draw():
                 rect(ghost_x, ghost_y, board.cell_size - 4, board.cell_size - 4)
                 block_index += 1
 
+def draw_hand():
     i = 0
     while i < len(hand):
         if hand[i] != 0:
@@ -326,11 +321,12 @@ def draw():
                 hand[i].draw()
         i = i + 1
 
-    # Draw selected piece on top
     if selected_piece != None:
         selected_piece.draw()
 
-    # Steak notification
+def draw_ui():
+    global streak_timer
+
     if streak_timer > 0:
         fill(255, 120, 40)
         textSize(15)
@@ -343,7 +339,6 @@ def draw():
         text("x" + str(current_streak) + " Streak", width - 110, 36)
 
     fill(255)
-    # When Game over
     if game_over:
         fill(255)
         textSize(36)
@@ -352,6 +347,13 @@ def draw():
         text("Click to restart", width / 2 - 70, height / 2 + 20)
     textSize(33)
     text("Score: " + str(score), width / 2 - 85, 38)
+
+def draw():
+    background(176, 217, 255)
+    board.draw()
+    draw_preview()
+    draw_hand()
+    draw_ui()
 
 def mousePressed():
     global selected_piece, selected_index, game_over
